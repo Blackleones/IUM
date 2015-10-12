@@ -27,10 +27,10 @@ type LWC() =
     default this.OnMouseDown _ = ()
     
     abstract OnMouseMove : MouseEventArgs -> unit
-    default this.OnMouseDown _ = ()
+    default this.OnMouseMove _ = ()
 
     abstract OnMouseUp : MouseEventArgs -> unit
-    default this.OnMouseDown _ = ()
+    default this.OnMouseUp _ = ()
 
     member this.Invalidate() = 
         if parent <> null then parent.Invalidate()
@@ -84,7 +84,7 @@ type LWContainer() =
 
 //type si usa per introdurre un nuovo tipo
 //inherit costruttore :per ereditare il costruttore di un oggetto
-type Editor() =
+type Editor() as this =
     inherit UserControl()
 
     //creo un array di 4 punti per la curva: 0,0 20,20 50,50 e 100,100. Point() è il punto 0,0 cioè il costruttore vuoto di point
@@ -133,7 +133,7 @@ type Editor() =
     // li metto qui dopo la transform perchè le interfacce si disegnano dopo 
     (*let b = new IumButton(Parent = this, Size = SizeF(64.f, 64.f))//definisco un nuovo
     b.OnPaint(e)*)
-    let controls = [| new IumButton(Parent=this, Text = "UP"); new IumButton(Parent=this, Location=PointF(32.f,32.f), Text="R") |]
+    let controls = [| new IumButton(Parent=this.Parent, Text = "UP"); new IumButton(Parent=this.Parent, Location=PointF(32.f,32.f), Text="R") |]
 
     member this.Tension //Tension è una proprietà che quando la leggo chiama il Get. Se la assegno chiama invece il Set
         //il vantaggio è che non espone i campi della classe e che è modificabile facilmente
