@@ -2,52 +2,13 @@
 
 open System.Windows.Forms
 open System.Drawing
-
+#load "LWC.fsx"
 let f = new Form(Text = "CurveEdit", BackColor = Color.Bisque, TopMost = true)
 f.Show()
 
-(* quando creo un bottone, in realtà alloco un po' di risorse di sistema (finestre). Il Framework cosa fa? Fa quello che fa il file
-system. Questo ha un overhead e dei comportamenti magari non desiderati. Per esempio nei sistemi grafici tradizionali, le
-finestre sono opache.
-Definisco una nuova classe che deriva direttamente da object con il sistema LIGHTWEIGHT CONTROLS
-In cosa consiste? Nel rifare un pezzettino di sistema grafico a piacimento. Ottengo quindi più praticità e più efficienza.
-il Lithtweight controls è un'astrazione programmativa che imita i controlli grafici.
-*)
-type LWC() = 
-    let mutable parent : Control = null //quello che ho creato apparterrà ad un controllo
-    let mutable location = PointF()
-    let mutable size = SizeF()
+(*apro il modulo che contiene informazioni relative al file aperto. in sostanza è il namespace di LWC*)
+open LWC
 
-    abstract (*indica un tipo astratto, cioè un'interfaccia *) OnPaint : (PaintEventArgs) -> unit
-    (*cioè OnPaint prende un tipo evento paint e non restituisce nulla (unit)*)
-    default this.OnPaint e = () //di default non fa nulla. 
-    //potevo anche lasciarlo astratto anche se così non avrei potuto istanziarlo
-
-    abstract OnMouseDown : MouseEventArgs -> unit
-    default this.OnMouseDown _ = ()
-    
-    abstract OnMouseMove : MouseEventArgs -> unit
-    default this.OnMouseMove _ = ()
-
-    abstract OnMouseUp : MouseEventArgs -> unit
-    default this.OnMouseUp _ = ()
-
-    member this.Invalidate() = 
-        if parent <> null then parent.Invalidate()
-
-    member this.Location
-        with get() = location
-        and set(v) = location <- v; if parent <> null then parent.Invalidate()
-
-    member this.Parent
-        with get() = parent
-        and set(v) = parent <- v
-
-    member this.Size
-        with get() = size
-        and set(v) = size <- v; if parent <> null then parent.Invalidate()
-
-//Adesso creo il button:
 type IumButton() as this =
     inherit LWC() //eredita da LWC
     do this.Size <- SizeF(32.f, 32.f) //richiama il Size di LWC
@@ -67,29 +28,33 @@ type IumButton() as this =
         let sz = g.MeasureString(text,this.Parent.Font) //calcolo quanto occupa la stringa UP con il font standard
         g.DrawString (text, this.Parent.Font (*font di default*), Brushes.White, (*dove lo metto? in posizione A*) PointF((this.Location.X - sz.Width)/2.f, (this.Location.Y - sz.Height)/2.f))
         //A=( (larghezzatot-larghezzafont) /2 , (altezzatot - altezzafont)/2)
-        
-//Introduciamo un controllo grafico che si comporta come la form (che deriva dalla classe controllo che è la radice dei controlli
-//grafici)
-//FINESTRA: rettangolo di pixel gestito dal sistema grafico
-//CONTROLLO GRAFICO: finestra dove al suo interno si possono ricevere eventi
+   
 
-type LWContainer() =
-    inherit UserControl()
-
-    let controls = ResizeArray<LWC>() //i controlli sono un array ridimensionabile di controlli
-
-    override this.OnPaint e =
-        controls |> Seq.iter(fun c -> c.OnPaint e)
-        
-
+(* quando creo un bottone, in realtà alloco un po' di risorse di sistema (finestre). Il Framework cosa fa? Fa quello che fa il file
+system. Questo ha un overhead e dei comportamenti magari non desiderati. Per esempio nei sistemi grafici tradizionali, le
+finestre sono opache.
+Definisco una nuova classe che deriva direttamente da object con il sistema LIGHTWEIGHT CONTROLS
+In cosa consiste? Nel rifare un pezzettino di sistema grafico a piacimento. Ottengo quindi più praticità e più efficienza.
+il Lithtweight controls è un'astrazione programmativa che imita i controlli grafici.
+*)
 //type si usa per introdurre un nuovo tipo
 //inherit costruttore :per ereditare il costruttore di un oggetto
 type Editor() as this =
-    inherit UserControl()
+    inherit LWContainer()
 
     //creo un array di 4 punti per la curva: 0,0 20,20 50,50 e 100,100. Point() è il punto 0,0 cioè il costruttore vuoto di point
     let pts = [| PointF(); PointF(20.f,20.f); PointF(50.f,50.f); PointF(50.f,100.f) |]
     
+    //aggiungo i bottoni customizzati
+    let button = [| 
+    new IumButton(Text="U", Location=PointF(32.f, 0.f));
+    new IumButton(Text="L", Location=PointF(0.f, 32.f));
+    new IumButton(Text="R", Location=PointF(64.f, 32.f));
+    new IumButton(Text="D", Location=PointF(32.f, 64.f));
+     |]
+
+
+
     //definisco una funzione che per il clic dell'utente, mi sa dire o meno se sono in uno dei cerchietti
     let handleSize = 5.f //raggio di un cerchietto
     
@@ -129,11 +94,12 @@ type Editor() as this =
         let y = p.Y - h.Y
         x * x + y * y < handleSize * handleSize
 
+    do buttons |> Seq.iter (fun b -> this.LWControls.Add(b))
+
     //VOGLIO AGGIUNGERE DEI BOTTONI PER FARE LO SCROLLING  
     // li metto qui dopo la transform perchè le interfacce si disegnano dopo 
     (*let b = new IumButton(Parent = this, Size = SizeF(64.f, 64.f))//definisco un nuovo
     b.OnPaint(e)*)
-    let controls = [| new IumButton(Parent=this.Parent, Text = "UP"); new IumButton(Parent=this.Parent, Location=PointF(32.f,32.f), Text="R") |]
 
     member this.Tension //Tension è una proprietà che quando la leggo chiama il Get. Se la assegno chiama invece il Set
         //il vantaggio è che non espone i campi della classe e che è modificabile facilmente
@@ -263,4 +229,3 @@ e.Focus()
 
 //se allineo i 4 punti sovrapponendoli, succede che la prima volta che ne tolgo uno prendo il primo, poi il secondo,
 //il terzo e poi il quarto: è un meccanismo di ordinamento
-
