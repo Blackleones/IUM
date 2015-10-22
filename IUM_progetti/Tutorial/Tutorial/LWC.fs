@@ -23,6 +23,13 @@
             abstract HitTest : PointF -> bool
             default this.HitTest p = (RectangleF(PointF(), size)).Contains(p)
 
+            (*
+                semplice funzione che aggiorna la posizione dell'oggetto
+            *)
+            abstract UpdatePosition : PointF -> unit
+            default this.UpdatePosition p =
+                location <- p
+
             member this.Invalidate() = 
                 if parent <> null then parent.Invalidate()
 

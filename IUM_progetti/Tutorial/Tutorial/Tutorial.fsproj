@@ -52,8 +52,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Compile Include="LWC.fs" />
-    <Compile Include="LWContainer.fs" />
     <Compile Include="CircleButton.fs" />
+    <Compile Include="LWContainer.fs" />
     <Compile Include="Editor.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

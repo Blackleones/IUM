@@ -9,7 +9,10 @@
             inherit LWContainer() 
 
             let mutable form : Form = null
-            
+            (*
+                dico al sistema grafico che sono interessato a usare il doublebuffer
+            *)
+            do this.SetStyle(ControlStyles.OptimizedDoubleBuffer ||| ControlStyles.AllPaintingInWmPaint, true)
             (*
                 creo un array di bottoni circolari
             *)
@@ -24,11 +27,11 @@
             *)
             do circleButtons |> Seq.iter (fun button -> button.Parent <- this; this.LWControls.Add(button))
             (*
-                test gestore evento del bottone: FAIL. Perche?
-                perche per adesso l'evento viene catturato dal LWContainer. LWContainer non gestisce l'evento
-                e quindi non ci sara' alcun modo per mandare l'evento al bottone cliccato
+                funzioni da eseguire quando clicco i bottoni circolari
+                funzioni TEST per vedere l'andamento degli eventi
             *)
-            do circleButtons |> Seq.iter (fun button -> button.MouseDown.Add(fun _ -> printfn "mi hai cliccato"))
+            do circleButtons |> Seq.iter (fun button -> button.MouseDown.Add(fun e -> printfn "mi hai cliccato"))
+            do circleButtons |> Seq.iter (fun button -> button.MouseUp.Add(fun _ -> printfn "mi hai rilasciato"))
 
             member this.Form with get() = form and set(v) = form <- v
 
