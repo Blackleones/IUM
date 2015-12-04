@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>bouncingBalls</title>
+	
+	<script type="text/javascript">
+		window.addEventListener('load', function(e){
+			var scatola = document.getElementById('scatola');
+			var boxes = document.getElementsByClassName('box');
+			
+			for (var i = 0; i < boxes.length; i++){
+				var b = boxes[i];
+				b.dx = i + 4;
+				b.dy = 4;
+			}
+
+			//equivalente a var getPos = function(el){...}
+			function getPos(el){
+				//-> ; è opzionale, se vado "a capo" lui ci mette ";"
+				var x = el.style.left == "" ? 0 : parseInt(el.style.left); 
+				var y = el.style.top == "" ? 0 : parseInt(el.style.top);
+
+				return {'x' : x, 'y' : y};
+			}
+
+			var interval = setInterval(function(){
+				for(var i = 0; i < boxes.length; i++){
+					var b = boxes[i];
+					var pos = getPos(b);
+
+					if(pos.x > scatola.offsetWidth  - b.offsetWidth || pos.x < 0)
+						b.dx = -b.dx;
+					if(pos.y > scatola.offsetHeight - b.offsetHeight || pos.y < 0)
+						b.dy = -b.dy;
+
+					pos.x += b.dx;
+					pos.y += b.dy;
+
+					b.style.left = pos.x + 'px';
+					b.style.top = pos.y + 'px';
+				}
+			}, 30);
+
+		})
+	</script>
+
+	<!--
+		archive.org
+		intellisense
+
+		absolute: assoluto rispetto al DOM
+		è sempre rispetto al papa' che non abbia un posizionamento statico
+
+		infatti se metto il posizionamento relative alla scatola, il box diventa
+		assoluto rispetto alla scatola.
+
+		se metto il posizionamento dells scatola in modo assoluto, il box
+		diventa assoluto rispetto al DOM
+	-->
+
+	<style>
+		#scatola{
+			position: relative;
+			width: 800px;
+			height: 600px;
+			border-color: yellowgreen;
+			border-width: 2px;
+			border-style: solid;
+		}
+
+		div.box{
+			position: absolute;
+			background: red;
+			width: 50px;
+			height: 50px;
+			top: 0px;
+			left: 0px;
+		}
+	</style>
+</head>
+<body>
+	<h1><span>Bouncing</span> balls</h1>
+	
+	<!-- 
+		div e span sono il cuore di HTML5
+		div = è un elemento dei layer. una sezione invisibile del documento (orizzontale)
+		span = è una divisione invisibile del documento (in linea)
+	-->
+	<!--
+		in caso di conflitti vince quello piu' esplicito
+	-->
+	<div id="scatola">
+		<div class="box">
+
+		</div>
+		<div class="box">
+			
+		</div>
+	</div>
+</body>
+</html>
