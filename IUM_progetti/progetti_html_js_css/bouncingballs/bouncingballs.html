@@ -4,15 +4,31 @@
 	<title>bouncingBalls</title>
 	
 	<script type="text/javascript">
+		window.addEventListener('click', function(e){
+			var scatola = document.getElementById('scatola');
+
+			var boxes = document.getElementsByClassName('box');
+			var height = scatola.offsetHeight;
+			var width = scatola.offsetWidth;
+			var offsetL = scatola.offsetLeft;
+			var offsetT = scatola.offsetTop;
+
+			if((e.pageY > offsetT && e.pageY < offsetT + height) &&
+				(e.pageX > offsetL && e.pageX < offsetL + width)){
+				var box = document.createElement('div');
+				scatola.appendChild(box);
+				box.setAttribute('class','box');
+				box.style.left = e.pageX - offsetL + 'px';
+				box.style.top = e.pageY - offsetT + 'px';
+				box.style.background = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+				box.dx = boxes.length + 1;
+				box.dy = 1; 
+			}
+		})
+
 		window.addEventListener('load', function(e){
 			var scatola = document.getElementById('scatola');
 			var boxes = document.getElementsByClassName('box');
-			
-			for (var i = 0; i < boxes.length; i++){
-				var b = boxes[i];
-				b.dx = i + 4;
-				b.dy = 4;
-			}
 
 			//equivalente a var getPos = function(el){...}
 			function getPos(el){
@@ -98,15 +114,6 @@
 		in caso di conflitti vince quello piu' esplicito
 	-->
 	<div id="scatola">
-		<div class="box">
-			<h3>1</h3>
-		</div>
-		<div class="box">
-			<h3>2</h3>
-		</div>
-		<div class="box">
-			<h3>3</h3>
-		</div>
 	</div>
 </body>
 </html>
