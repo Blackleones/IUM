@@ -1,0 +1,3 @@
+Leonardo Lurci mat. 490137 MidTerm Febbraio 2016
+es 1 : HTML JS CSS
+es 2, 3_4 : F# (Windows 10, Visual Studio 2015)

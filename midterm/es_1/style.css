@@ -1,0 +1,46 @@
+*{
+    margin: 0 auto;
+    padding: 0 auto;
+    background: black;
+}
+
+#container{
+    margin: 5% auto;
+    width: 600px;
+    height: 600px;
+}
+
+.quad{
+    margin-top: 1%;
+    display: inline-block;
+    border: 2px solid red;
+    width: 32%;
+    height: 32%;
+}
+
+.box{
+    background: white;
+    margin-top: 1%;
+    display: inline-block;
+    margin-left: 2%;
+    border: 1px solid green;
+    width: 30%;
+    height: 30%;
+    overflow: hidden;
+}
+
+.lock{
+    background: yellow;
+}
+
+.box span{
+    background: white;
+    color: black;
+    display: block;
+    margin: 19px;
+    font-size: 25px;
+}
+
+.lock span{
+    background: yellow;
+}
